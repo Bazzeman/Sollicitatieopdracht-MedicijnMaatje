@@ -1,12 +1,13 @@
 package com.bas.pennings.medicijnmaatje.services;
 
 import com.bas.pennings.medicijnmaatje.entities.Medication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.bas.pennings.medicijnmaatje.exceptions.DuplicateMedicationException;
 import com.bas.pennings.medicijnmaatje.exceptions.MedicationNotFoundException;
 import com.bas.pennings.medicijnmaatje.repositories.MedicationRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -30,8 +31,8 @@ public class MedicationService {
 		return repository.save(medication);
 	}
 
-	public List<Medication> getAllMedications() {
-		return repository.findAll();
+	public Page<Medication> getAllMedications(Pageable pageable) {
+		return repository.findAll(pageable);
 	}
 
 	public Medication getMedicationById(Long id) {

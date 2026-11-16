@@ -1,11 +1,16 @@
 package com.bas.pennings.medicijnmaatje.controllers;
 
+import com.bas.pennings.medicijnmaatje.dtos.MedicationPageResponse;
+import org.springframework.data.domain.Page;
 import com.bas.pennings.medicijnmaatje.dtos.MedicationRequest;
 import com.bas.pennings.medicijnmaatje.dtos.MedicationResponse;
 import com.bas.pennings.medicijnmaatje.entities.Medication;
 import com.bas.pennings.medicijnmaatje.services.MedicationService;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +28,15 @@ public class MedicationController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<MedicationResponse>> getAllMedications() {
-		List<MedicationResponse> medications = service
-			.getAllMedications()
-			.stream()
-			.map(MedicationResponse::fromEntity)
-			.toList();
+	public ResponseEntity<MedicationPageResponse> getAllMedications(
+		@PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC)
+		Pageable pageable) {
 
-		return ResponseEntity.ok(medications);
+		Page<MedicationResponse> medications = service
+			.getAllMedications(pageable)
+			.map(MedicationResponse::fromEntity);
+
+		return ResponseEntity.ok(MedicationPageResponse.fromPage(medications));
 	}
 
 	@GetMapping("/{id}")
