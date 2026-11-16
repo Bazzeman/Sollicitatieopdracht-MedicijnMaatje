@@ -1,6 +1,8 @@
 package com.bas.pennings.medicijnmaatje.services;
 
 import com.bas.pennings.medicijnmaatje.entities.Medication;
+import com.bas.pennings.medicijnmaatje.exceptions.DuplicateMedicationException;
+import com.bas.pennings.medicijnmaatje.exceptions.MedicationNotFoundException;
 import com.bas.pennings.medicijnmaatje.repositories.MedicationRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,7 @@ public class MedicationService {
 		String normalizedName = name.trim().toLowerCase(Locale.ROOT);
 
 		if (repository.existsByNameIgnoreCase(normalizedName)) {
-			throw new IllegalArgumentException("A medication with this name already exists.");
+			throw new DuplicateMedicationException("A medication with this name already exists.");
 		}
 
 		Medication medication = new Medication(normalizedName, dosage, frequency);
@@ -34,7 +36,7 @@ public class MedicationService {
 
 	public Medication getMedicationById(Long id) {
 		return repository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException(
+			.orElseThrow(() -> new MedicationNotFoundException(
 				"Medication with ID " + id + " was not found."
 			));
 	}
@@ -45,7 +47,7 @@ public class MedicationService {
 		repository.findByNameIgnoreCase(normalizedName)
 			.filter(m -> !m.getId().equals(id))
 			.ifPresent(_ -> {
-				throw new IllegalArgumentException(
+				throw new DuplicateMedicationException(
 					"A medication with this name already exists."
 				);
 			});
